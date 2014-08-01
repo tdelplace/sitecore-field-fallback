@@ -16,6 +16,6 @@ using System.Runtime.InteropServices;
 [assembly: Guid("c98820b3-a928-437f-b185-c072668db480")]
 
 // Version info is set by GitVersion during the build
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: AssemblyFileVersion("0.0.0.0")]
-[assembly: AssemblyInformationalVersion("0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.7.0")]
+[assembly: AssemblyInformationalVersion("1.1.7+2.Branch.buildprocess.Sha.ca6a663c631676f3f8392b97ec455330009f992a")]

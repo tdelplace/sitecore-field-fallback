@@ -22,7 +22,7 @@ Project("{CAA73BB0-EF22-4D79-A57E-DF67B3BA9C80}") = "Demo.Sitecore.Master", "Dem
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. Solution Files", "00. Solution Files", "{4EAA7A81-64F4-4CEB-AF25-D6DB3D6D1277}"
 	ProjectSection(SolutionItems) = preProject
-		build.bat = build.bat
+		build.cmd = build.cmd
 		build.fsx = build.fsx
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
 		..\README.md = ..\README.md
@@ -33,6 +33,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Demo", "04. Demo", "{22476521-D59B-43DB-BFE5-0D4ED25855F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Web", "Demo.Web\Demo.Web.csproj", "{CC55891F-E4DE-4EBD-9A01-0F4498E49FCF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{371DD8BE-8D4A-436E-A66E-CF8BE64420A4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
