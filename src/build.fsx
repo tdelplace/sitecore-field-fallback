@@ -5,6 +5,23 @@ open Fake.Git
 
 // Properties
 let buildDir = "./build/"
+let nugetPath = "../lib/nuget.exe"
+
+let RestorePackageParamF = 
+  fun _ ->{ ToolPath = nugetPath
+            Sources = []
+            TimeOut = System.TimeSpan.FromMinutes 5.
+            OutputPath = "./packages" 
+            Retries = 1
+           } :Fake.RestorePackageHelper.RestorePackageParams
+
+
+// override default
+let RestorePackages2() = 
+  !! "./**/packages.config"
+  |> Seq.iter (RestorePackage RestorePackageParamF)
+
+
 
 // Targets
 Target "Clean" (fun _ ->
@@ -12,6 +29,11 @@ Target "Clean" (fun _ ->
 )
 
 Target "BuildApp" (fun _ ->
+ 
+    // restore NuGet packages
+    //RestorePackages()
+    RestorePackages2()
+
     !! "FieldFallback.sln"
       |> MSBuild buildDir "Build"  [("Configuration","Release"); ("PackageVersion", "9.9.9")]
       |> Log "AppBuild-Output: "
