@@ -6,6 +6,7 @@ open Fake.Git
 // Properties
 let buildDir = "./build/"
 let nugetPath = "../lib/nuget.exe"
+let packageVersion = ""
 
 let RestorePackageParamF = 
   fun _ ->{ ToolPath = nugetPath
@@ -35,7 +36,7 @@ Target "BuildApp" (fun _ ->
     RestorePackages2()
 
     !! "FieldFallback.sln"
-      |> MSBuild buildDir "Build"  [("Configuration","Release"); ("PackageVersion", "9.9.9")]
+      |> MSBuild buildDir "Build"  [("Configuration","Release"); ("PackageVersion", packageVersion)]
       |> Log "AppBuild-Output: "
     //trace "p"
 )
@@ -71,16 +72,10 @@ Target "SetVersion" (fun _ ->
     let semVer =
         semVer.[1].Replace("\"", "").Replace(",", "")
 
-    trace semVer
+    // set the global variable
+    let packageVersion = semVer
 
-//    !! "src/app/**/*.scproj"
-//        |>
-//        let tdsProj = new System.Xml.XmlDocument() in
-//            tdsProj.LoadXml xml;
-//        
-//
-//    XPathReplace("") (System.Xml.XmlDocument)
-    // TODO: Modify the .scproj file
+    trace semVer
 )
 
 Target "Default" (fun _ ->
