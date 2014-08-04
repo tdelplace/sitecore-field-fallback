@@ -1,29 +1,15 @@
 // include Fake lib
 #r @"packages/FAKE/tools/FakeLib.dll"
+#r @"packages/GitVersion/Lib/Net45/GitVersionCore.dll"
 open Fake
 open Fake.Git
 
 // Properties
 let buildDir = "./build/"
-//let gitVersionToolPath = "./Tools/GitVersion.exe" 
-//let nugetPath = "../lib/nuget.exe"
+let buildConfiguration = "Release"
+let gitVersionToolPath = "packages/GitVersion.CommandLine/Tools/GitVersion.exe" 
+
 let mutable packageVersion = "0.0.0" // The version we will use for the TDS .update packages. This will be assigned a value in the SetVersion target
-
-//let RestorePackageParamF = 
-//  fun _ ->{ ToolPath = nugetPath
-//            Sources = []
-//            TimeOut = System.TimeSpan.FromMinutes 5.
-//            OutputPath = "./packages" 
-//            Retries = 1
-//           } :Fake.RestorePackageHelper.RestorePackageParams
-//
-//
-//// override default
-//let RestorePackages2() = 
-//  !! "./**/packages.config"
-//  |> Seq.iter (RestorePackage RestorePackageParamF)
-
-
 
 // Targets
 Target "Clean" (fun _ ->
@@ -32,23 +18,12 @@ Target "Clean" (fun _ ->
 
 Target "RestorePackages" (fun _ ->
     RestorePackages()
-
-    // Assume Chocolatey is installed so that GitVersion can be installed
-    // http://chocolatey.org/
-    // https://github.com/Particular/GitVersion/wiki/Command-Line-Tool
-    cinst GitVersion
 )
 
 Target "BuildApp" (fun _ ->
- 
-    // restore NuGet packages
-    //RestorePackages()
-    //RestorePackages2()
-
     !! "FieldFallback.sln"
-      |> MSBuild buildDir "Build"  [("Configuration","Release"); ("PackageVersion", packageVersion)]
+      |> MSBuild buildDir "Build"  [("Configuration",buildConfiguration); ("PackageVersion", packageVersion)]
       |> Log "AppBuild-Output: "
-    //trace "p"
 )
 
 Target "SetVersion" (fun _ ->
@@ -56,18 +31,26 @@ Target "SetVersion" (fun _ ->
     // Run GitVersion so it updates the assembly info
     let result = 
         ExecProcess (fun info ->
-                    info.FileName <- "GitVersion.exe" // -- assumed in path via Chocolatey **//gitVersionToolPath
+                    info.FileName <- gitVersionToolPath
                     info.WorkingDirectory <- "." 
                     info.Arguments <- "/output buildserver /updateassemblyinfo"
                     ) (System.TimeSpan.FromMinutes 5.0) 
     
     if result <> 0 then failwith "Failed setting assembly version via GitVersion"
     
+    // Use the GitVersion assembly to get the version so we can pass it to MSBUILD
+    //let semanticVersion = GitVersion.VersionCache.GetVersion "../.git"
+    //let variables = GitVersion.VariableProvider.GetVariablesFor(semanticVersion, GitVersion.AssemblyVersioningScheme.MajorMinorPatch, true)
+    //packageVersion <- variables.["FullSemVer"]
+    
+    // ^^^ There appears to be a bug with the assembly version where it required LibGit2Sharp
+    
+    // so....
     // Run it simply to get version info out to the screen
     // This allows us to get the SemVer so we can modify the .scproj file
     let result = 
         ExecProcessAndReturnMessages (fun info ->
-                    info.FileName <- "../lib/GitVersion.exe" 
+                    info.FileName <- gitVersionToolPath 
                     info.WorkingDirectory <- "." 
                     info.Arguments <- ""
                     ) (System.TimeSpan.FromMinutes 5.0) 
@@ -75,7 +58,7 @@ Target "SetVersion" (fun _ ->
         String.concat "," result.Messages
 
     let semVer =
-        (result.Messages.Item(9))
+        (result.Messages.Item(14))
     let semVer =
         semVer.Split [|':'|] 
 
