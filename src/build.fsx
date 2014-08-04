@@ -5,22 +5,23 @@ open Fake.Git
 
 // Properties
 let buildDir = "./build/"
-let nugetPath = "../lib/nuget.exe"
+//let gitVersionToolPath = "./Tools/GitVersion.exe" 
+//let nugetPath = "../lib/nuget.exe"
 let mutable packageVersion = "0.0.0" // The version we will use for the TDS .update packages. This will be assigned a value in the SetVersion target
 
-let RestorePackageParamF = 
-  fun _ ->{ ToolPath = nugetPath
-            Sources = []
-            TimeOut = System.TimeSpan.FromMinutes 5.
-            OutputPath = "./packages" 
-            Retries = 1
-           } :Fake.RestorePackageHelper.RestorePackageParams
-
-
-// override default
-let RestorePackages2() = 
-  !! "./**/packages.config"
-  |> Seq.iter (RestorePackage RestorePackageParamF)
+//let RestorePackageParamF = 
+//  fun _ ->{ ToolPath = nugetPath
+//            Sources = []
+//            TimeOut = System.TimeSpan.FromMinutes 5.
+//            OutputPath = "./packages" 
+//            Retries = 1
+//           } :Fake.RestorePackageHelper.RestorePackageParams
+//
+//
+//// override default
+//let RestorePackages2() = 
+//  !! "./**/packages.config"
+//  |> Seq.iter (RestorePackage RestorePackageParamF)
 
 
 
@@ -29,11 +30,20 @@ Target "Clean" (fun _ ->
     CleanDir buildDir
 )
 
+Target "RestorePackages" (fun _ ->
+    RestorePackages()
+
+    // Assume Chocolatey is installed so that GitVersion can be installed
+    // http://chocolatey.org/
+    // https://github.com/Particular/GitVersion/wiki/Command-Line-Tool
+    cinst GitVersion
+)
+
 Target "BuildApp" (fun _ ->
  
     // restore NuGet packages
     //RestorePackages()
-    RestorePackages2()
+    //RestorePackages2()
 
     !! "FieldFallback.sln"
       |> MSBuild buildDir "Build"  [("Configuration","Release"); ("PackageVersion", packageVersion)]
@@ -46,7 +56,7 @@ Target "SetVersion" (fun _ ->
     // Run GitVersion so it updates the assembly info
     let result = 
         ExecProcess (fun info ->
-                    info.FileName <- "../lib/GitVersion.exe" 
+                    info.FileName <- "GitVersion.exe" // -- assumed in path via Chocolatey **//gitVersionToolPath
                     info.WorkingDirectory <- "." 
                     info.Arguments <- "/output buildserver /updateassemblyinfo"
                     ) (System.TimeSpan.FromMinutes 5.0) 
@@ -80,11 +90,11 @@ Target "SetVersion" (fun _ ->
 
 Target "Default" (fun _ ->
     trace "Completed building the Field Fallback module"
-   
 )
 
 // Dependencies
 "Clean"
+  ==> "RestorePackages"
   ==> "SetVersion"
   ==> "BuildApp"
   ==> "Default"
