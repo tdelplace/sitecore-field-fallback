@@ -6,7 +6,7 @@ open Fake.Git
 // Properties
 let buildDir = "./build/"
 let nugetPath = "../lib/nuget.exe"
-let packageVersion = ""
+let mutable packageVersion = "0.0.0" // The version we will use for the TDS .update packages. This will be assigned a value in the SetVersion target
 
 let RestorePackageParamF = 
   fun _ ->{ ToolPath = nugetPath
@@ -73,7 +73,7 @@ Target "SetVersion" (fun _ ->
         semVer.[1].Replace("\"", "").Replace(",", "")
 
     // set the global variable
-    let packageVersion = semVer
+    packageVersion <- semVer
 
     trace semVer
 )
