@@ -28,6 +28,7 @@
     <SccLocalPath>
     </SccLocalPath>
     <SitecoreDatabase>master</SitecoreDatabase>
+    <NuGetPackageImportStamp>50f1cecb</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -131,22 +132,10 @@ http://TeamDevelopmentForSitecore.com</PackageReadme>
       <Name>Processors.Globalization</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\packages\TeamDevelopmentForSitecore.Targets.5.0.0.10\tools\HedgehogDevelopment.SitecoreProject.targets" />
-  <!-- After the package is generated, copy it up to the /trunk/release directory -->
-  <Target Name="AfterGeneratePackage" Condition=" '$(Configuration)' == 'Release' ">
-    <PropertyGroup>
-      <!-- calculate the package directory-->
-      <_PackageOutputDirectory Condition="'$(OutDir)' != '$(OutputPath)' and '$(OutDir)' != ''">$(OutDir)_Packages\$(MSBuildProjectName)\</_PackageOutputDirectory>
-      <_PackageOutputDirectory Condition="'$(OutDir)' == '$(OutputPath)' or '$(OutDir)' == ''">$(OutputPath)..\Package_$(Configuration)\</_PackageOutputDirectory>
-      <_CopyPath>..\..\release</_CopyPath>
-    </PropertyGroup>
-    <!-- Grab the packages -->
-    <ItemGroup>
-      <_OutputFiles Include="$(_PackageOutputDirectory)\**\*.*" />
-    </ItemGroup>
-    <!-- write a message to output window -->
-    <Message Text="Copying package from $(_PackageOutputDirectory) to $(_CopyPath)" Importance="high" />
-    <!-- perform the copy -->
-    <Copy SourceFiles="@(_OutputFiles)" DestinationFiles="@(_OutputFiles -> '$(_CopyPath)\%(RecursiveDir)\%(FileName)%(Extension)')" />
-  </Target>
+  <ItemGroup>
+    <Content Include="C:\Git\sitecore-field-fallback\src\Processors.Globalization.Sitecore.Master\packages.config" />
+  </ItemGroup>
+  <!-- load the TDS targets normally. If TDS wasn't installed, use the NuGet package path -->
+  <Import Project="$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets" Condition="Exists('$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets')" />
+  <Import Project="..\packages\TeamDevelopmentForSitecore.Targets.5.0.0.10\tools\HedgehogDevelopment.SitecoreProject.targets" Condition="!Exists('$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets')" />
 </Project>
