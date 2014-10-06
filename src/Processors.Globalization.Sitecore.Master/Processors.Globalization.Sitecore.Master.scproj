@@ -53,7 +53,7 @@ http://trac.sitecore.net/FieldFallback
 
 This package was generated with Team Development for Sitecore.
 http://TeamDevelopmentForSitecore.com</PackageReadme>
-    <SitecoreAssemblyPath>..\packages\Sitecore.6.5.0.111123\lib</SitecoreAssemblyPath>
+    <SitecoreAssemblyPath>..\packages\SitecoreKernel.6.5.0.111123\lib</SitecoreAssemblyPath>
     <GeneratePackage>True</GeneratePackage>
     <SeperateFilesAndItems>False</SeperateFilesAndItems>
     <AddDateTimeToPackageName>False</AddDateTimeToPackageName>
