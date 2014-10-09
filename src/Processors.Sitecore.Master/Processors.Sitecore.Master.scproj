@@ -154,5 +154,5 @@ http://TeamDevelopmentForSitecore.com</PackageReadme>
   </ItemGroup>
   <!-- load the TDS targets normally. If TDS wasn't installed, use the NuGet package path -->
   <Import Project="$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets" Condition="Exists('$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets')" />
-  <Import Project="..\packages\TeamDevelopmentForSitecore.Targets.5.0.0.10\tools\HedgehogDevelopment.SitecoreProject.targets" Condition="!Exists('$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets')" />
+  <Import Project="..\packages\TeamDevelopmentForSitecore.Targets.5.0.0.10\build\TeamDevelopmentForSitecore.Targets.targets" Condition="!Exists('$(MSBuildExtensionsPath)\HedgehogDevelopment\SitecoreProject\v9.0\HedgehogDevelopment.SitecoreProject.targets')" />
 </Project>
