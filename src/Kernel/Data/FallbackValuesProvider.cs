@@ -84,6 +84,9 @@ namespace FieldFallback.Data
             _supportCache = new FallbackSupportCache();
         }
 
+        static bool _initializingFallback;
+        static object _fallbackInitLock = new object();
+
         public override void Initialize(string name, NameValueCollection config)
         {
             base.Initialize(name, config);
@@ -93,9 +96,27 @@ namespace FieldFallback.Data
                 return;
             }
 
-            EnableDatabases();
+            if (!_initializingFallback)
+            {
+                lock (_fallbackInitLock)
+                {
+                    if (!_initializingFallback)
+                    {
+                        try
+                        {
+                            _initializingFallback = true;
 
-            EnableSites();
+                            EnableDatabases();
+
+                            EnableSites();
+                        }
+                        finally
+                        {
+                            _initializingFallback = false;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -529,7 +550,7 @@ namespace FieldFallback.Data
         private void OnPublishEndRemoteHandled(object sender, EventArgs args)
         {
             PublishEndRemoteEventArgs remoteArgs = args as PublishEndRemoteEventArgs;
-            
+
             bool deep = remoteArgs.Deep;
             ID rootItemID = ID.Parse(remoteArgs.RootItemId);
 
